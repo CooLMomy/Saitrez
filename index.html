@@ -7,22 +7,48 @@
 
 <style>
     body {
-         margin: 0;
-    font-family: Arial, sans-serif;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-image: url("back.png"); 
+        background-size: cover;          
+        background-position: center;     
+        background-repeat: no-repeat;   
+        background-attachment: fixed; /* Чтобы фон не уезжал при скролле */
+        color: white;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Растягиваем body на всю высоту экрана */
+    }
 
-    background-image: url("back.png"); 
-    background-size: cover;          
-    background-position: center;     
-    background-repeat: no-repeat;   
+    /* Стили Хедера */
+    header {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 15px 0;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
 
+    header nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 15px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
 
-    color: white;
+    header nav a:hover {
+        color: #bbb;
+    }
+
+    /* Основной контент */
+    .content {
+        flex: 1; /* Позволяет контенту занимать всё свободное место, толкая футер вниз */
     }
 
     .card {
         max-width: 800px;
-        margin: 60px auto;
-        background: #686767;
+        margin: 40px auto;
+        background: rgba(104, 103, 103, 0.9); /* Сделали чуть прозрачным для стиля */
         padding: 40px;
         border-radius: 20px;
         box-shadow: 0 0 30px rgba(0,0,0,0.6);
@@ -37,14 +63,6 @@
         border-bottom: 1px solid #333;
         padding-bottom: 5px;
         margin-top: 30px;
-    }
-
-    .avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #444;
     }
 
     .top {
@@ -73,58 +91,76 @@
         line-height: 1.8;
     }
 
-    .footer {
+    /* Стили Футера */
+    footer {
+        background: rgba(0, 0, 0, 0.8);
         text-align: center;
-        margin-top: 40px;
-        opacity: 0.6;
+        padding: 20px 0;
+        margin-top: auto; /* Прижимает к низу */
         font-size: 14px;
+        opacity: 0.8;
+    }
+
+    footer a {
+        color: #fff;
+        text-decoration: underline;
     }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<header>
+    <nav>
+        <a href="index.html">Главная</a>
+        <a href="about.html">Обо мне</a>
+        <a href="projects.html">Проекты</a>
+        <a href="contacts.html">Контакты</a>
+    </nav>
+</header>
 
-    <div class="top">   
-        <div>
-            <h1>Нуртас Бахтияр</h1>
-            <p>Начинающий разработчик / студент</p>
+<div class="content">
+    <div class="card">
+        <div class="top">   
+            <div>
+                <h1>Нуртас Бахтияр</h1>
+                <p>Начинающий разработчик / студент</p>
+            </div>
         </div>
+
+        <h2 id="about">Обо мне</h2>
+        <p>
+            Люблю программирование, сайты и эксперименты с кодом.  
+            Сейчас изучаю C++, С# и разработку сценариев.
+        </p>
+
+        <h2>Навыки</h2>
+        <ul>
+            <li>HTML / CSS</li>
+            <li>C++</li>
+            <li>Турник</li>
+            <li>Чтение электросхем</li>
+        </ul>
+
+        <h2 id="projects">Проекты</h2>
+        <ul>
+            <li>Сайт с книгами и корзиной</li>
+            <li>Пьезо радио</li>
+            <li><a href="https://ryan-goslig.itch.io/phyisik-book" style="color: #61dafb;">Учебная игра</a></li>
+        </ul>
+
+        <h2 id="contacts">Контакты</h2>
+        <p> Email: <a href="mailto:netakrabotaet@gmail.com?subject=Связь%20с%20сайта" style="color: #61dafb;">netakrabotaet@gmail.com </a></p>
+        <p>Номер: 87771075390</p>
+
+        <a href="https://youtu.be/dQw4w9WgXcQ?si=sKqYHgIateU1cvqW" class="btn">Прикол</a>
     </div>
-
-    <h2>Обо мне</h2>
-    <p>
-        Люблю программирование, сайты и эксперименты с кодом.  
-        Сейчас изучаю C++, С# и разработку сценариев.
-    </p>
-
-    <h2>Навыки</h2>
-    <ul>
-        <li>HTML / CSS</li>
-        <li>C++</li>
-        <li>Турник</li>
-        <li>Чтение электросхем</li>
-    </ul>
-
-    <h2>Проекты</h2>
-    <ul>
-        <li>Сайт с книгами и корзиной</li>
-        <li>Пьезо радио</li>
-        <li><a href="https://ryan-goslig.itch.io/phyisik-book">Учебная игра</a></li>
-    </ul>
-
-    <h2>Контакты</h2>
-    <p> Email: <a href="mailto:netakrabotaet@gmail.com?subject=Связь%20с%20сайта">netakrabotaet@gmail.com </a></p>
-    <p>Номер: 87771075390</p>
-
-    <a href="https://youtu.be/dQw4w9WgXcQ?si=sKqYHgIateU1cvqW" class="btn">Прикол</a>
-
-    <div class="footer">
-        © 2026 Права не защещины
-    </div>
-
 </div>
+
+<footer>
+    <div>© 2026 Нуртас Бахтияр. Все права "не защищены".</div>
+    <div>Сделано с помощью HTML и CSS</div>
+</footer>
 
 </body>
 </html>
