@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обо мне — Нуртас Бахтияр</title>
+    <style>
+        /* Общие стили для консистентности */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("back.png"); 
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;   
+            background-attachment: fixed;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        header nav a:hover { color: #61dafb; }
+
+        .content { 
+            flex: 1; 
+            max-width: 900px; 
+            margin: 40px auto; 
+            padding: 0 20px;
+        }
+
+        .about-section {
+            background: rgba(30, 30, 30, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 30px;
+        }
+
+        .about-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 2px solid #61dafb;
+        }
+
+        h1 { margin: 0; color: #61dafb; }
+        
+        .bio-text {
+            line-height: 1.7;
+            font-size: 18px;
+            color: #ddd;
+        }
+
+        /* Навыки с прогресс-барами */
+        .skills-section {
+            margin-top: 40px;
+        }
+
+        .skill-item {
+            margin-bottom: 20px;
+        }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #444;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #61dafb, #a29bfe);
+            border-radius: 5px;
+        }
+
+        /* Блок интересов */
+        .interests {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .interest-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .interest-card:hover {
+            background: #61dafb;
+            color: #000;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .about-header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="index.html">Главная</a>
+        <a href="about.html" style="color: #61dafb;">Обо мне</a>
+        <a href="projects.html">Проекты</a>
+    </nav>
+</header>
+
+<div class="content">
+    <div class="about-section">
+        <div class="about-header">
+            <img src="avatar.png" alt="Нуртас Бахтияр">
+            <div>
+                <h1>Нуртас Бахтияр</h1>
+                <p style="color: #bbb;">Разработчик / Студент / Творец</p>
+            </div>
+        </div>
+
+        <div class="bio-text">
+            <p>Привет! Я увлекаюсь созданием вещей — будь то цифровой код или реальные электронные схемы. Мой путь начался с любопытства к тому, как работают программы «под капотом».</p>
+            <p>Сейчас я активно изучаю <strong>C++ и C#</strong>, так как мне нравится работать с производительностью и логикой. В свободное время я экспериментирую с веб-технологиями и занимаюсь спортом.</p>
+        </div>
+
+        <div class="skills-section">
+            <h2>Технические навыки</h2>
+            
+            <div class="skill-item">
+                <div class="skill-name"><span>C++ / C#</span><span>65%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 65%;"></div></div>
+            </div>
+
+            <div class="skill-item">
+                <div class="skill-name"><span>HTML5 / CSS3</span><span>85%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 85%;"></div></div>
+            </div>
+
+            <div class="skill-item">
+                <div class="skill-name"><span>Схемотехника</span><span>50%</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+            </div>
+        </div>
+
+        <h2>Хобби и интересы</h2>
+        <div class="interests">
+            <div class="interest-card">💪 Турник</div>
+            <div class="interest-card">⚡ Электроника</div>
+            <div class="interest-card">🎮 Геймдев</div>
+            <div class="interest-card">📚 Чтение</div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    © 2026 Нуртас Бахтияр — Продолжаю учиться и создавать
+</footer>
+
+</body>
+</html>
