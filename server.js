@@ -7,27 +7,36 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/chat", async (req, res) => {
-    const userMessage = req.body.message;
+    try {
+        const userMessage = req.body.message;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-                { role: "user", content: userMessage }
-            ]
-        })
-    });
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [{ role: "user", content: userMessage }]
+            })
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    res.json({
-        reply: data.choices[0].message.content
-    });
+        // Проверка: пришел ли ответ от OpenAI
+        if (data.choices && data.choices[0]) {
+            res.json({ reply: data.choices[0].message.content });
+        } else {
+            console.error("Ошибка OpenAI:", data);
+            res.status(500).json({ reply: "Ошибка от API нейросети" });
+        }
+
+    } catch (error) {
+        console.error("Ошибка сервера:", error);
+        res.status(500).json({ reply: "Произошла ошибка на сервере" });
+    }
 });
 
-app.listen(3000, () => console.log("Server started"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, "0.0.0.0", () => console.log(`Server started on port ${PORT}`));
