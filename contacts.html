@@ -123,8 +123,75 @@
             text-align: center;
             padding: 20px 0;
         }
+        .ai-chat {
+    margin-top: 40px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.ai-chat h2 {
+    text-align: center;
+    color: #61dafb;
+}
+
+#chat {
+    height: 200px;
+    overflow-y: auto;
+    background: #111;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+}
+
+.chat-input button {
+    background: #61dafb;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: white;
+}
     </style>
 </head>
+    <script>
+async function send() {
+    let input = document.getElementById("msg");
+    let text = input.value;
+
+    if (!text) return;
+
+    let chat = document.getElementById("chat");
+
+    chat.innerHTML += "<p><b>Ты:</b> " + text + "</p>";
+
+    let res = await fetch("https://saitrez.onrender.com", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: text})
+    });
+
+    let data = await res.json();
+
+    chat.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
+
+    chat.scrollTop = chat.scrollHeight;
+    input.value = "";
+}
+</script>
 <body>
 
 <header>
@@ -156,11 +223,22 @@
         </div>
 
         <form>
+    
             <input type="text" placeholder="Ваше имя" required>
             <input type="email" placeholder="Ваш Email" required>
             <textarea rows="5" placeholder="Ваше сообщение" required></textarea>
             <button type="submit" class="submit-btn">Отправить сообщение</button>
         </form>
+        <div class="ai-chat">
+    <h2>💬 AI помощник</h2>
+
+    <div id="chat"></div>
+
+    <div class="chat-input">
+        <input id="msg" placeholder="Напиши сообщение...">
+        <button onclick="send()">➤</button>
+    </div>
+</div>
     </div>
 </div>
 
