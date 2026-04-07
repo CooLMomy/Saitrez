@@ -12,23 +12,21 @@ app.post("/chat", async (req, res) => {
 
         // ВСТАВЬ СВОЮ ССЫЛКУ ИЗ NGROK НИЖЕ
         // ВАЖНО: оставь /v1/chat/completions в конце пути
-        const NGROK_URL = "https://becalmingly-unsaline-aaliyah.ngrok-free.dev";
+       // ВАЖНО: убедись, что в конце ссылки стоит /v1/chat/completions
+const NGROK_URL = "https://becalmingly-unsaline-aaliyah.ngrok-free.dev/v1/chat/completions"; 
 
-        const response = await fetch(NGROK_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                // Эта строка нужна, чтобы ngrok не показывал страницу-заглушку
-                "ngrok-skip-browser-warning": "true" 
-            },
-            body: JSON.stringify({
-                model: "local-model", // LM Studio поймет любой текст здесь
-                messages: [
-                    { role: "user", content: userMessage }
-                ],
-                temperature: 0.7
-            })
-        });
+const response = await fetch(NGROK_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true" 
+    },
+    body: JSON.stringify({
+        model: "local-model",
+        messages: [{ role: "user", content: userMessage }],
+        temperature: 0.7
+    })
+});
 
         const data = await response.json();
 
