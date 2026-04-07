@@ -178,7 +178,7 @@ async function send() {
 
     chat.innerHTML += "<p><b>Ты:</b> " + text + "</p>";
 
-    let res = await fetch("https://saitrez.onrender.com", {
+    let res = await fetch("https://saitrez-1.onrender.com", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({message: text})
