@@ -10,31 +10,37 @@ app.post("/chat", async (req, res) => {
     try {
         const userMessage = req.body.message;
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        // ВСТАВЬ СВОЮ ССЫЛКУ ИЗ NGROK НИЖЕ
+        // ВАЖНО: оставь /v1/chat/completions в конце пути
+        const NGROK_URL = "https://becalmingly-unsaline-aaliyah.ngrok-free.dev";
+
+        const response = await fetch(NGROK_URL, {
             method: "POST",
             headers: {
-                "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                // Эта строка нужна, чтобы ngrok не показывал страницу-заглушку
+                "ngrok-skip-browser-warning": "true" 
             },
             body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [{ role: "user", content: userMessage }]
+                model: "local-model", // LM Studio поймет любой текст здесь
+                messages: [
+                    { role: "user", content: userMessage }
+                ],
+                temperature: 0.7
             })
         });
 
         const data = await response.json();
 
-        // Проверка: пришел ли ответ от OpenAI
         if (data.choices && data.choices[0]) {
             res.json({ reply: data.choices[0].message.content });
         } else {
-            console.error("Ошибка OpenAI:", data);
-            res.status(500).json({ reply: "Ошибка от API нейросети" });
+            res.status(500).json({ reply: "Нейросеть молчит, проверь LM Studio" });
         }
 
     } catch (error) {
-        console.error("Ошибка сервера:", error);
-        res.status(500).json({ reply: "Произошла ошибка на сервере" });
+        console.error("Ошибка:", error);
+        res.status(500).json({ reply: "Не удалось достучаться до домашнего ПК" });
     }
 });
 
