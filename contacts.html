@@ -78,7 +78,6 @@
         .method-card p { margin: 0; font-size: 14px; opacity: 0.8; }
         .method-card a { color: white; text-decoration: none; font-weight: bold; }
 
-        /* Форма обратной связи */
         form {
             display: flex;
             flex-direction: column;
@@ -94,6 +93,7 @@
             font-size: 16px;
             outline: none;
             transition: 0.3s;
+            box-sizing: border-box;
         }
 
         input:focus, textarea:focus {
@@ -123,75 +123,94 @@
             text-align: center;
             padding: 20px 0;
         }
+
         .ai-chat {
-    margin-top: 40px;
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 15px;
-}
+            margin-top: 40px;
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
 
-.ai-chat h2 {
-    text-align: center;
-    color: #61dafb;
-}
+        .ai-chat h2 {
+            text-align: center;
+            color: #61dafb;
+        }
 
-#chat {
-    height: 200px;
-    overflow-y: auto;
-    background: #111;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-}
+        #chat {
+            height: 200px;
+            overflow-y: auto;
+            background: #111;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
 
-.chat-input {
-    display: flex;
-    gap: 10px;
-}
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-.chat-input input {
-    flex: 1;
-}
+        .chat-input input {
+            flex: 1;
+            min-width: 0; /* Важно для гибкости во флексе */
+        }
 
-.chat-input button {
-    background: #61dafb;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-}
+        .chat-input button {
+            background: #61dafb;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            flex-shrink: 0; /* Чтобы кнопка не сжималась и не вылезала */
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.chat-input button:hover {
-    background: white;
-}
+        .chat-input button:hover {
+            background: white;
+        }
     </style>
-</head>
     <script>
-async function send() {
-    let input = document.getElementById("msg");
-    let text = input.value;
+        async function send() {
+            let input = document.getElementById("msg");
+            let text = input.value.trim();
 
-    if (!text) return;
+            if (!text) return;
 
-    let chat = document.getElementById("chat");
+            let chat = document.getElementById("chat");
+            chat.innerHTML += "<p><b>Ты:</b> " + text + "</p>";
+            
+            // Очищаем строку сразу после добавления в чат
+            input.value = "";
 
-    chat.innerHTML += "<p><b>Ты:</b> " + text + "</p>";
+            try {
+                let res = await fetch("https://saitrez-1.onrender.com/chat", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({message: text})
+                });
 
-let res = await fetch("https://saitrez-1.onrender.com/chat", { // Добавили /chat
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({message: text})
-});
+                let data = await res.json();
+                chat.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
+            } catch (e) {
+                chat.innerHTML += "<p style='color:red;'>Ошибка соединения</p>";
+            }
 
-    let data = await res.json();
+            chat.scrollTop = chat.scrollHeight;
+        }
 
-    chat.innerHTML += "<p><b>AI:</b> " + data.reply + "</p>";
-
-    chat.scrollTop = chat.scrollHeight;
-    input.value = "";
-}
-</script>
+        // Функция для обработки Enter
+        function checkEnter(event) {
+            if (event.key === "Enter") {
+                send();
+            }
+        }
+    </script>
+</head>
 <body>
 
 <header>
@@ -222,23 +241,21 @@ let res = await fetch("https://saitrez-1.onrender.com/chat", { // Добавил
             </div>
         </div>
 
-        <form>
-    
+        <form onsubmit="event.preventDefault();">
             <input type="text" placeholder="Ваше имя" required>
             <input type="email" placeholder="Ваш Email" required>
             <textarea rows="5" placeholder="Ваше сообщение" required></textarea>
             <button type="submit" class="submit-btn">Отправить сообщение</button>
         </form>
+
         <div class="ai-chat">
-    <h2>💬 AI помощник</h2>
-
-    <div id="chat"></div>
-
-    <div class="chat-input">
-        <input id="msg" placeholder="Напиши сообщение...">
-        <button onclick="send()">➤</button>
-    </div>
-</div>
+            <h2>💬 AI помощник</h2>
+            <div id="chat"></div>
+            <div class="chat-input">
+                <input id="msg" placeholder="Напиши сообщение..." onkeydown="checkEnter(event)">
+                <button onclick="send()">➤</button>
+            </div>
+        </div>
     </div>
 </div>
 
