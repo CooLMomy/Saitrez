@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wxWidgets — Шпаргалка</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@700;900&family=Geologica:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d45;
+  --border2: #253550;
+  --ok: #00e5a0;
+  --ok-dim: #00c48822;
+  --ok-mid: #00c48844;
+  --err: #ff4d6d;
+  --err-dim: #ff4d6d18;
+  --err-mid: #ff4d6d33;
+  --warn: #ffd166;
+  --warn-dim: #ffd16618;
+  --text: #e8f0fe;
+  --text2: #8fa3c0;
+  --text3: #5a7090;
+  --accent: #4f8ef7;
+  --mono: 'JetBrains Mono', monospace;
+  --head: 'Unbounded', sans-serif;
+  --body: 'Geologica', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 10% 0%, #0d1f4422 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 90% 100%, #0a2a3a22 0%, transparent 60%);
+}
+
+.title-block h1 {
+  font-family: var(--head);
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  background: linear-gradient(90deg, #e8f0fe 0%, #8bb4f8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-block p {
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.search-wrap input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12);
+}
+
+.search-wrap input::placeholder { color: var(--text3); }
+
+.filter-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.fbtn {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--border2); color: var(--text); }
+.fbtn.active-all { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.08); }
+.fbtn.active-ok { border-color: var(--ok); color: var(--ok); background: var(--ok-dim); }
+.fbtn.active-err { border-color: var(--err); color: var(--err); background: var(--err-dim); }
+
+.stats-row {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text2);
+}
+
+.stat-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* LEGEND */
+.legend {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text2);
+}
+
+.leg-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.leg-ok { background: var(--ok-mid); color: var(--ok); }
+.leg-err { background: var(--err-mid); color: var(--err); }
+.leg-warn { background: var(--warn-dim); color: var(--warn); border: 1px solid rgba(255,209,102,0.3); }
+
+/* CARDS */
+.cards-container {
+  padding: 1.5rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.15s;
+  animation: fadeUp 0.3s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+}
+
+.card.ok-card { border-left: 3px solid var(--ok); }
+.card.err-card { border-left: 3px solid var(--err); }
+
+.card-header {
+  padding: 1.1rem 1.4rem 0.9rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.num-badge {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ok-card .num-badge { background: var(--ok-dim); color: var(--ok); }
+.err-card .num-badge { background: var(--err-dim); color: var(--err); }
+
+.question-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+  flex: 1;
+}
+
+.card-body {
+  padding: 0 1.4rem 1.2rem;
+}
+
+.answer-block {
+  padding: 0.8rem 1.1rem;
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  word-break: break-all;
+  position: relative;
+  overflow: hidden;
+}
+
+.ok-card .answer-block {
+  background: var(--ok-dim);
+  border: 1px solid rgba(0,229,160,0.2);
+  color: #a0ffd8;
+}
+
+.err-card .answer-block {
+  background: var(--err-dim);
+  border: 1px solid rgba(255,77,109,0.2);
+  color: #ffb3c1;
+}
+
+.answer-label {
+  font-size: 0.67rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--body);
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.ok-card .answer-label { color: var(--ok); }
+.err-card .answer-label { color: var(--err); }
+
+/* DETAIL SECTION */
+.detail-section {
+  margin-top: 0.9rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.detail-header {
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: var(--surface2);
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.detail-header:hover { background: #1e2a40; }
+
+.detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--warn);
+  letter-spacing: 0.02em;
+}
+
+.detail-title .icon { font-size: 14px; }
+
+.chevron {
+  color: var(--text3);
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.detail-body {
+  display: none;
+  padding: 1rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.detail-section.open .detail-body { display: block; }
+.detail-section.open .chevron { transform: rotate(180deg); }
+
+.detail-note {
+  font-size: 0.88rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+}
+
+/* Options list */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.opt-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.75rem 1rem;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+}
+
+.opt-correct {
+  background: var(--ok-dim);
+  border-color: rgba(0,229,160,0.25);
+}
+
+.opt-wrong {
+  background: var(--err-dim);
+  border-color: rgba(255,77,109,0.2);
+}
+
+.opt-maybe {
+  background: var(--warn-dim);
+  border-color: rgba(255,209,102,0.25);
+}
+
+.opt-neutral {
+  background: rgba(255,255,255,0.03);
+  border-color: var(--border);
+}
+
+.opt-marker {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0px;
+}
+
+.mk-correct { background: var(--ok-mid); color: var(--ok); }
+.mk-wrong { background: var(--err-mid); color: var(--err); }
+.mk-maybe { background: rgba(255,209,102,0.25); color: var(--warn); }
+.mk-neutral { background: var(--border); color: var(--text3); }
+
+.opt-content { flex: 1; }
+.opt-code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.opt-correct .opt-code { color: #a0ffd8; }
+.opt-wrong .opt-code { color: #ffb3c1; }
+.opt-maybe .opt-code { color: #ffe69a; }
+
+.opt-explain {
+  font-size: 0.76rem;
+  color: var(--text2);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.opt-correct .opt-explain { color: rgba(0,229,160,0.7); }
+.opt-wrong .opt-explain { color: rgba(255,77,109,0.7); }
+.opt-maybe .opt-explain { color: rgba(255,209,102,0.7); }
+
+/* NO RESULTS */
+.no-results {
+  text-align: center;
+  padding: 4rem;
+  color: var(--text3);
+}
+
+.no-results .big { font-size: 3rem; margin-bottom: 0.5rem; }
+.no-results p { font-size: 0.9rem; }
+
+/* BOTTOM BAR */
+.header {
+  position: fixed !important;
+  bottom: 0 !important;
+  top: auto !important;
+  left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,14,26,0.97) !important;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border) !important;
+  border-bottom: none !important;
+  padding: 0.75rem 1.2rem !important;
+}
+.header-top { display: none !important; }
+.stats-row { margin-top: 0.5rem; }
+body { padding-bottom: 120px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a5070; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+  </div>
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Поиск по вопросу или ответу..." oninput="applyFilters()">
+    </div>
+    <div class="filter-btns">
+      <button class="fbtn active-all" id="btnAll" onclick="setFilter('all')">Все</button>
+      <button class="fbtn" id="btnOk" onclick="setFilter('ok')">✓ Верные</button>
+      <button class="fbtn" id="btnErr" onclick="setFilter('err')">✗ Неверные</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-chip"><div class="stat-dot" style="background:var(--text3)"></div><span id="statTotal">0 вопросов</span></div>
+    <div class="stat-chip"><div class="stat-dot" style="background:var(--ok)"></div><span id="statOk">0 верных</span></div>
+    <div class="stat-chip"><div class="stat-dot" style="background:var(--err)"></div><span id="statErr">0 неверных</span></div>
+  </div>
+</div>
+
+
+
+<div class="cards-container" id="cardsContainer"></div>
+
+<script>
+const OK = 0, ERR = 1;
+
+// data: [num, question, answer, type, note?, options?]
+// options: [{code, status: 'correct'|'wrong'|'maybe'|'neutral', explain?}]
+const data = [
+[1,"Как перевести строку в верхний регистр в wxWidgets?","str.MakeUpper()",OK],
+[2,"Как добавить инициализацию локализации в wxWidgets?","wxLocale m_locale; m_locale.Init(wxLANGUAGE_RUSSIAN);",OK],
+[3,"Какой тип данных для хранения целых чисел в C++?","int",OK],
+[4,"Как обновить интерфейс в wxWidgets?","panel->Refresh();",OK],
+[5,"Как получить количество элементов в wxListBox?","listBox->GetCount();",OK],
+[6,"Какой тип данных для хранения строки в wxWidgets?","wxString",OK],
+[7,"Как задать прозрачность для wxPanel?","panel->SetTransparent(150);",OK],
+[8,"Какая директива препроцессора для подключения библиотек в C++?","#include",OK],
+[9,"Как установить максимальное значение для wxSlider?","slider->SetMax(100);",OK],
+[10,"Как добавить всплывающее меню в wxWidgets?","wxMenu menu; menu.Append(ID, \"Option\");",OK],
+[11,"Как задать максимальную высоту для wxTextCtrl?","textCtrl->SetMaxSize(wxSize(-1, 100));",OK],
+[12,"Как задать курсор для окна wxWindow?","window->SetCursor(wxCURSOR_HAND);",OK],
+[13,"Как получить значение из wxTextCtrl?","textCtrl->GetValue();",OK],
+[14,"Как нельзя задавать шрифт для wxStaticText?","label->SetTextFont(wxFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));",OK],
+[15,"Как сделать wxTextCtrl многострочным?","new wxTextCtrl(parent, wxID_ANY, \"\", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);",OK],
+[16,"Как создать кнопку wxButton и обработать нажатие?","wxButton* button = new wxButton(parent, wxID_ANY, \"Click Me\"); button->Bind(wxEVT_BUTTON, &MyFrame::OnButtonClick, this);",OK],
+[17,"Как сделать wxPanel растягиваемым в wxBoxSizer?","sizer->Add(panel, 1, wxEXPAND);",OK],
+[18,"Как задать цвет фона окна в wxWidgets?","SetBackgroundColour(wxColour(255, 255, 255));",OK],
+[19,"Как создать структуру в языке C?","struct Person { int age; char name[20]; };",OK],
+[20,"Как добавить изображение в wxWidgets?","new wxStaticBitmap(parent, wxID_ANY, wxBitmap(\"image.png\", wxBITMAP_TYPE_PNG))",OK],
+[21,"Как создать простую панель инструментов в wxWidgets?","CreateToolBar()",OK],
+[22,"Как изменить цвет фона для wxFrame?","frame->SetBackgroundColour(wxColour(255, 255, 255));",OK],
+[23,"Как добавить вкладки в wxWidgets?","new wxNotebook(parent, wxID_ANY)",OK],
+[24,"Как создать простое окно с заголовком «Мое приложение»?","wxFrame* frame = new wxFrame(nullptr, wxID_ANY, \"Мое приложение\");",OK],
+[25,"Как проверить, что локализация поддерживает язык?","locale.IsAvailable(wxLANGUAGE_RUSSIAN);",OK],
+[26,"Как установить состояние wxCheckBox?","checkBox->SetValue(true);",OK],
+[27,"Как проверить, что выделение памяти в C не удалось?","if (arr == NULL) {}",OK],
+[28,"Как задать размер окна в wxWidgets?","SetSize(width, height)",OK],
+[29,"Какой метод wxWidgets для создания строки состояния?","CreateStatusBar();",OK],
+[30,"Как добавить обработчик двойного клика на wxListBox?","listBox->Bind(wxEVT_LISTBOX_DCLICK, &MyFrame::OnDoubleClick, this);",OK],
+[31,"Как отменить действие в wxTextCtrl?","textCtrl->Undo()",OK],
+[32,"Как задать wxTextCtrl только для чтения?","textCtrl->SetEditable(false);",OK],
+[33,"Как вывести строку на экран в языке C?","printf(\"Hello, World!\");",OK],
+[34,"Как вставить строку в wxString?","str.Insert(index, \"text\")",OK],
+[35,"Как добавить каталог для локализационных файлов?","locale.AddCatalogLookupPathPrefix(\"locale\");",OK],
+[36,"Как закрыть соединение с БД SQLite?","sqlite3_close(db);",OK],
+[37,"Как установить шрифт для текста в wxWidgets?","SetFont(wxFont(size, family, style, weight))",OK],
+[38,"Как объявить функцию sum(int a, int b) в C?","int sum(int a, int b);",OK],
+[39,"Как задать минимальный размер окна в wxWidgets?","SetMinSize(wxSize(width, height))",OK],
+[40,"Как создать панель в wxWidgets?","new wxPanel(parent, wxID_ANY)",OK],
+[41,"Как отобразить модальное окно в wxWidgets?","dialog->ShowModal()",OK],
+[42,"Как создать wxRadioButton в wxWidgets?","wxRadioButton* radioButton = new wxRadioButton(panel, \"Option\", wxID_ANY);",ERR,
+  "Вопрос составлен с ошибкой — среди вариантов нет однозначно правильного. 4-й и 5-й вариант неверны, значит правильный где-то среди первых трех. По документации правильный порядок: parent → id → label.",
+  [
+    {code: 'new wxRadioButton(panel, "Option", wxID_ANY);', status: 'maybe', explain: '+ Нужно проверить — возможно это правильный ответ по тесту, хотя порядок id и label перепутан'},
+    {code: 'wxRadioButton* = new wxRadioButton(panel, wxID_ANY, "Option");', status: 'neutral', explain: 'Нет имени переменной — синтаксически неверно, но может быть задумкой теста'},
+    {code: 'wxRadioButton* radioButton = new wxRadioButton(panel, "Option");', status: 'neutral', explain: 'Только 3 аргумента, нет id — неполная запись'},
+    {code: 'wxRadioButton* radioButton = new wxRadioButton(panel, wxID_ANY, "Option");', status: 'wrong', explain: '✗ Ты выбрал этот — тест засчитал неверным'},
+    {code: 'wxRadioButton* radioButton = new wxRadioButton(panel, "Option", wxID_ANY);', status: 'wrong', explain: '✗ Точно неверный — id и label перепутаны местами'},
+  ]
+],
+[43,"Как загрузить изображение в wxBitmap?","wxBitmap image(\"image.png\", wxBITMAP_TYPE_PNG);",OK],
+[44,"Как сделать компонент растягиваемым по размеру окна?","wxEXPAND",OK],
+[45,"Как вставить данные в таблицу SQLite?","sqlite3_exec(db, \"INSERT INTO users (id, name) VALUES (1, 'John Doe');\", nullptr, nullptr, nullptr);",OK],
+[46,"Как установить шрифт для wxTextCtrl?","textCtrl->SetFont(wxFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));",OK],
+[47,"Как определить количество строк в wxGrid?","grid->GetNumberRows();",OK],
+[48,"Как проверить, является ли wxTextCtrl пустым?","textCtrl->IsEmpty()",OK],
+[49,"Как программно добавить элемент в wxListBox?","listBox->Append(\"New Item\");",OK],
+[50,"Какой метод wxWidgets для создания окна с текстовым полем?","new wxTextCtrl(parent, wxID_ANY, \"Default Text\")",OK],
+[51,"Как загрузить перевод с использованием wxWidgets?","locale.AddCatalog(\"myapp\");",OK],
+[52,"Как обработать событие в другом потоке в wxWidgets?","Bind(wxEVT_THREAD, &MyFrame::OnThreadEvent, this);",OK],
+[53,"Как использовать wxFlexGridSizer для управления размерами?","sizer->Add(textCtrl, 0, wxEXPAND | wxALL, 5);",OK],
+[54,"Как добавить элемент в wxListBox?","listBox->Append(\"Item\")",OK],
+[55,"Как изменить значение метки wxStaticText?","label->SetLabel(\"New Text\");",OK],
+[56,"Как добавить статический текст в окно wxWidgets?","new wxStaticText(parent, wxID_ANY, \"Static Text\")",OK],
+[57,"Как создать контекстное меню в wxWidgets?","wxMenu* menu = new wxMenu(); menu->Append(ID, \"Option\");",OK],
+[58,"Как создать новый экземпляр wxButton в wxWidgets?","new wxButton(parent, wxID_ANY, \"Button Text\")",OK],
+[59,"Какая функция используется для вывода текста на консоль в C++?","std::cout",OK],
+[60,"Как присвоить значение элементу структуры в языке C?","person.age = 25;",OK],
+[61,"Как установить курсор для wxTextCtrl?","textCtrl->SetCursor(wxCURSOR_HAND);",OK],
+[62,"Как задать текст для кнопки wxButton?","button->SetLabel(\"Button Text\");",OK],
+[63,"Как получить данные из таблицы SQLite?","sqlite3_exec(db, \"SELECT * FROM users;\", callback, nullptr, nullptr);",OK],
+[64,"Как скрыть элемент wxStaticText?","label->Hide();",OK],
+[65,"Как использовать условный оператор if в языке C?","if (x > 10) {}",OK],
+[66,"Как изменить цвет текста в wxStaticText?","label->SetForegroundColour(wxColour(255, 0, 0));",OK],
+[67,"Как программно выбрать элемент в wxComboBox?","comboBox->SetSelection(1);",OK],
+[68,"Как динамически выделить память для массива из 10 int в C?","int* arr = (int*)malloc(10 * sizeof(int));",OK],
+[69,"Как правильно завершить программу в языке C?","return 0;",OK],
+[70,"Как создать окно с несколькими панелями в wxWidgets?","wxPanel* panel1 = new wxPanel(parent, wxID_ANY); wxPanel* panel2 = new wxPanel(parent, wxID_ANY);",OK],
+[71,"Как создать экземпляр wxComboBox?","wxComboBox* = new wxComboBox(parent, wxID_ANY, \"Default\", wxDefaultPosition, wxSize(200, 30));",ERR,
+  "Тест засчитал 5-й вариант неверным. Правильный ответ среди первых — скорее всего 1-й, порядок аргументов верный по документации wxWidgets.",
+  [
+    {code: 'new wxComboBox(parent, wxID_ANY, "Default", wxDefaultPosition, wxSize(200, 30));', status: 'maybe', explain: '+ Нужно проверить — порядок аргументов верный, возможно это правильный ответ'},
+    {code: 'wxComboBox* comboBox = wxComboBox(wxSize(200, 30));', status: 'neutral', explain: 'Нет new, мало аргументов'},
+    {code: 'wxComboBox* = new wxComboBox(parent, wxID);', status: 'neutral', explain: 'Нет имени переменной, неполные аргументы'},
+    {code: 'new ComboBox(parent, wxID_ANY, "Default", wxSize(200, 30));', status: 'neutral', explain: 'ComboBox вместо wxComboBox'},
+    {code: 'wxComboBox* = new wxComboBox(parent, wxID_ANY, "Default", wxDefaultPosition, wxSize(200, 30));', status: 'wrong', explain: '✗ Ответ теста — нет имени переменной после *'},
+  ]
+],
+[72,"Как изменить язык приложения в wxWidgets?","m_locale.Init(wxLANGUAGE_RUSSIAN);",OK],
+[73,"Как обработать событие закрытия окна в wxWidgets?","EVT_CLOSE(Handler)",OK],
+[74,"Как создать переменную типа wxDateTime?","wxDateTime date;",OK],
+[75,"Как вывести переведённую строку с использованием wxWidgets?","wxGetTranslation(\"Hello, world!\");",OK],
+[76,"Как создать экземпляр wxFrame с определённым размером?","wxFrame* frame = new wxFrame(nullptr, wxID_ANY, \"Frame\", wxDefaultPosition, wxSize(800, 600));",OK],
+[77,"Какой тип данных для хранения символа в C++?","char",OK],
+[78,"Как изменить заголовок окна в wxWidgets?","SetTitle(\"New Title\")",OK],
+[79,"Как установить начальное значение в wxSlider?","slider->SetValue(50);",OK],
+[80,"Как отправить событие из потока в основной поток?","wxPostEvent(targetWindow, event);",OK],
+[81,"Как обрабатывать нажатие клавиши в wxWidgets?","EVT_KEY_DOWN(Handler)",OK],
+[82,"Как добавить кнопку в панель с wxBoxSizer?","sizer->Add(new wxButton(panel, wxID_ANY, \"Click me\"));",OK],
+[83,"Как добавить вкладки в wxNotebook?","notebook->AddPage(page, \"Tab Name\");",OK],
+[84,"Как программно скрыть окно в wxWidgets?","Hide()",OK],
+[85,"Как запретить изменение текста в wxTextCtrl?","textCtrl->SetEditable(false);",OK],
+[86,"Как объявить цикл for на 10 итераций в языке C?","for (int i = 0; i < 10; i++) {}",OK],
+[87,"Как создать и задать текст для wxStaticText?","new wxStaticText(panel, wxID_ANY, \"Text\")",OK],
+[88,"Как создать диалоговое окно с выбором файла?","wxFileDialog(parent, \"Open File\", \"\", \"\", \"*.*\", wxFD_OPEN);",OK],
+[89,"Как получить координаты нажатия мыши в wxWidgets?","wxGetMousePosition();",OK],
+[90,"Как обработать событие изменения размера окна?","EVT_SIZE(Handler)",OK],
+[91,"Как определить размер массива в языке C?","sizeof(arr) / sizeof(arr[0]);",OK],
+[92,"Как создать таблицу в базе данных SQLite?","sqlite3_exec(db, \"CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT);\", nullptr, nullptr, nullptr);",OK],
+[93,"Как получить выбранный элемент из wxComboBox?","comboBox->GetValue();",OK],
+[94,"Как программно скрыть wxButton?","button->Hide();",OK],
+[95,"Как объявить массив целых чисел размером 5 в языке C?","int arr[5];",OK],
+[96,"Как скрыть и показать wxPanel?","panel->Hide(); panel->Show();",OK],
+[97,"Как создать wxCheckBox?","new CheckBox(panel, wxID_ANY, \"Check Me\", wxDefaultPosition, wxSize(150, 30));",ERR,
+  "Тест засчитал 2-й, 5-й вариант неверным.3-й нужно проверить — правильный класс wxCheckBox и аргументы.",
+  [
+    {code: 'wxCheckBox* checkBox = new wx(panel, "Check Me");', status: 'neutral', explain: 'Неполное имя класса wx'},
+    {code: 'new CheckBox(panel, wxID_ANY, "Check Me", wxDefaultPosition, wxSize(150, 30));', status: 'wrong', explain: '✗ Ответ теста — CheckBox вместо wxCheckBox'},
+    {code: 'wxCheckBox* checkBox = new wxCheckBox(panel, wxID_ANY, "Check Me");', status: 'maybe', explain: '+ Нужно проверить — правильный класс и порядок аргументов'},
+    {code: 'wxCheckBox* checkBox = new (panel, wxID_ANY, "Check Me", wxDefaultPosition);', status: 'neutral', explain: 'Пропущено имя класса после new'},
+    {code: 'wxCheckBox* = new wxCheckBox(panel, wxID_ANY, "Check Me");', status: 'wrong', explain: '✗ Нет имени переменной после *'},
+  ]
+],
+[98,"Как добавить поле ввода в wxWidgets?","new wxTextCtrl(panel, wxID_ANY, \"Enter text\")",OK],
+[99,"Как объявить указатель на функцию в языке C?","int (*ptr)(int, int);",OK],
+[100,"Как программно установить фокус на wxButton?","button->SetFocus(true);",ERR,
+  "Тест засчитал 5-й вариант неверным. 3-й нужно проверить — SetFocus() без параметров документально верный метод.",
+  [
+    {code: 'button->Focus();', status: 'neutral', explain: 'Возможно правильный по тесту — проверить'},
+    {code: 'button->GrabFocus();', status: 'neutral', explain: 'Такого метода нет в wxWidgets'},
+    {code: 'button->SetFocus();', status: 'maybe', explain: '+ Нужно проверить — документально верный метод без параметров'},
+    {code: 'button->Activate();', status: 'neutral', explain: 'Такого метода нет в wxWidgets'},
+    {code: 'button->SetFocus(true);', status: 'wrong', explain: '✗ Ответ теста — SetFocus не принимает параметров'},
+  ]
+],
+[101,"Как программно сделать активным элемент wxButton?","button->Activate();",ERR,
+  "Тест засчитал 1-й, 5-й вариант неверным. 3-й нужно проверить.",
+  [
+    {code: 'button->Enable();', status: 'wrong', explain: '✗ Enable() убирает disabled-состояние, но не делает элемент активным в смысле фокуса'},
+    {code: 'button->Click();', status: 'neutral', explain: 'Такого метода нет в wxWidgets'},
+    {code: 'button->SetActive();', status: 'maybe', explain: '+ Нужно проверить — возможно существует в документации'},
+    {code: 'button->SetFocus();', status: 'neutral', explain: 'Устанавливает фокус — функционально близко'},
+    {code: 'button->Activate();', status: 'wrong', explain: '✗ Ответ теста — такого метода не существует в API wxWidgets'},
+  ]
+],
+[102,"Как подключиться к базе данных SQLite в C++?","sqlite3_open(\"database.db\", &db);",OK],
+[103,"Как закрыть wxDialog с подтверждением?","dialog->EndModal(wxID_OK);",OK],
+[104,"Как установить максимальный размер окна wxFrame?","frame->SetMaxSize(wxSize(1024, 768));",OK],
+[105,"Как привязать обработчик события на изменение текста в wxTextCtrl?","textCtrl->Bind(wxEVT_TEXT, &MyFrame::OnTextChanged, this);",OK],
+[106,"Как настроить wxFrame на максимальное состояние при запуске?","frame->Maximize(true);",OK],
+[107,"Как установить значение для wxSlider?","slider->SetValue(50);",OK],
+[108,"Какой тип данных для десятичных чисел с плавающей точкой в C++?","float",OK],
+[109,"Как установить язык для wxWidgets?","m_locale.Init(wxLANGUAGE_RUSSIAN);",OK],
+[110,"Как вызвать диалоговое окно в wxWidgets?","new wxMessageDialog(parent, \"Message\", \"Title\", wxOK)",OK],
+[111,"Как запустить поток с асинхронной задачей в wxWidgets?","thread->Run();",OK],
+[112,"Как установить прозрачность для окна в wxWidgets?","frame->SetTransparent(128);",OK],
+[113,"Как объявить указатель на целое число в языке C?","int* ptr;",OK],
+[114,"Как получить текущую дату и время в wxWidgets?","wxDateTime now = wxDateTime::Now();",OK],
+[115,"Как обновить интерфейс из другого потока в wxWidgets?","wxPostEvent(targetWindow, event);",OK],
+[116,"Как создать новый класс в C++?","class MyClass { ... };",OK],
+[117,"Какой метод создания массива в C++ вызовет ошибку?","int arr[5] = new int[5];",OK],
+[118,"Как вывести строку в консоль в wxWidgets?","wxPuts(\"Hello World!\");",OK],
+[119,"Что является корректным способом объявления функции в C++?","int sum(int a, int b);",OK],
+[120,"Как создать wxBitmap с изображением в wxWidgets?","wxBitmap image(\"image.png\", wxBITMAP_TYPE_PNG);",OK],
+[121,"Какое событие обрабатывает wxButton в wxWidgets?","EVT_BUTTON",OK],
+[122,"Как ограничить диапазон значений для wxSlider?","slider->SetRange(0, 100);",OK],
+[123,"Как получить текущую локаль в wxWidgets?","wxLocale::GetLanguageName(m_locale.GetLanguage());",OK],
+[124,"Как вызвать событие через wxPostEvent?","wxPostEvent(targetWindow, event);",OK],
+[125,"Как завершить поток в wxWidgets?","thread->Delete();",OK],
+[126,"Как объявить и инициализировать строку в языке C?","char str[] = \"Hello\";",OK],
+[127,"Как нельзя задавать идентификатор для wxButton?","wxButton* button = new wxButton(parent, ID->OK, \"OK\");",OK],
+[128,"Как создать диалоговое окно с выбором каталога?","wxDirDialog(parent, \"Select Directory\", \"\", wxDD_DIR_MUST_EXIST);",OK],
+[129,"Как извлечь подстроку из строки wxString?","str.Mid(start, length)",OK],
+[130,"Как обработать событие нажатия кнопки в wxWidgets?","EVT_BUTTON(ID, Handler)",OK],
+];
+
+let currentFilter = 'all';
+
+function setFilter(f) {
+  currentFilter = f;
+  document.getElementById('btnAll').className = 'fbtn' + (f==='all' ? ' active-all' : '');
+  document.getElementById('btnOk').className = 'fbtn' + (f==='ok' ? ' active-ok' : '');
+  document.getElementById('btnErr').className = 'fbtn' + (f==='err' ? ' active-err' : '');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let rows = data;
+  if (currentFilter === 'ok') rows = rows.filter(r => r[3] === OK);
+  if (currentFilter === 'err') rows = rows.filter(r => r[3] === ERR);
+  if (q) rows = rows.filter(r => r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q));
+  renderCards(rows);
+}
+
+function toggleDetail(el) {
+  const section = el.closest('.detail-section');
+  section.classList.toggle('open');
+}
+
+function getStatusClass(status) {
+  return {correct:'opt-correct', wrong:'opt-wrong', maybe:'opt-maybe', neutral:'opt-neutral'}[status] || 'opt-neutral';
+}
+
+function getMarkerClass(status) {
+  return {correct:'mk-correct', wrong:'mk-wrong', maybe:'mk-maybe', neutral:'mk-neutral'}[status] || 'mk-neutral';
+}
+
+function getMarkerSymbol(status) {
+  return {correct:'✓', wrong:'✗', maybe:'+', neutral:'○'}[status] || '○';
+}
+
+function renderCards(rows) {
+  const container = document.getElementById('cardsContainer');
+  
+  if (rows.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="big">🔍</div><p>Ничего не найдено</p></div>`;
+    updateStats(rows);
+    return;
+  }
+
+  container.innerHTML = rows.map((r, idx) => {
+    const [num, question, answer, type, note, options] = r;
+    const isErr = type === ERR;
+    const cardClass = isErr ? 'err-card' : 'ok-card';
+    const answerLabel = isErr ? 'Ответ по тесту (засчитан неверным)' : 'Правильный ответ';
+
+    let detailHtml = '';
+    if (isErr && note) {
+      let optionsHtml = '';
+      if (options && options.length) {
+        optionsHtml = `<div class="options-list">` + options.map(opt => `
+          <div class="opt-item ${getStatusClass(opt.status)}">
+            <div class="opt-marker ${getMarkerClass(opt.status)}">${getMarkerSymbol(opt.status)}</div>
+            <div class="opt-content">
+              <div class="opt-code">${escHtml(opt.code)}</div>
+              ${opt.explain ? `<div class="opt-explain">${escHtml(opt.explain)}</div>` : ''}
+            </div>
+          </div>
+        `).join('') + `</div>`;
+      }
+
+      detailHtml = `
+        <div class="detail-section" id="detail-${num}">
+          <div class="detail-header" onclick="toggleDetail(this)">
+            <div class="detail-title">
+              <span class="icon">⚠</span>
+              Подробный разбор ошибки
+            </div>
+            <span class="chevron">▾</span>
+          </div>
+          <div class="detail-body">
+            <p class="detail-note">${escHtml(note)}</p>
+            ${optionsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="card ${cardClass}" style="animation-delay:${Math.min(idx * 0.02, 0.3)}s">
+        <div class="card-header">
+          <div class="num-badge">${num}</div>
+          <div class="question-text">${escHtml(question)}</div>
+        </div>
+        <div class="card-body">
+          <div class="answer-block">
+            <span class="answer-label">${answerLabel}</span>
+            ${escHtml(answer)}
+          </div>
+          ${detailHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateStats(rows);
+}
+
+function updateStats(rows) {
+  const okCount = rows.filter(r => r[3] === OK).length;
+  const errCount = rows.filter(r => r[3] === ERR).length;
+  document.getElementById('statTotal').textContent = `${rows.length} вопросов`;
+  document.getElementById('statOk').textContent = `${okCount} верных`;
+  document.getElementById('statErr').textContent = `${errCount} неверных`;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+renderCards(data);
+updateStats(data);
+</script>
+</body>
+</html>
